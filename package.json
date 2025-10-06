@@ -1,0 +1,31 @@
+{
+  "name": "cli-maker",
+  "version": "0.1.0",
+  "main": "index.js",
+  "bin":{
+    "cli-maker":"./src/cli-maker.runner.js"
+  },
+  "scripts": {
+    "format": "prettier --write \"./**/*.(ts|js)\"",
+    "test": "npx tsx test/tests.ts",
+    "esbuild":"esbuild",
+    "bundle":"esbuild --bundle --platform=node --format=cjs --outfile=src/lib.js --external:path --external:fs index.ts",
+    "tsx":"tsx",
+    "pkg":"pkg"
+  },
+  "sideEffects": [
+    "./lib/plugins/*.ts",
+    "./lib/systems/*.ts"
+  ],
+  "author": "SystemsPurge",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "esbuild": "^0.25.10",
+    "pkg": "^5.8.1",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}
