@@ -7,6 +7,7 @@ const {
   create_jsfile,
   create_tsfile,
   create_binary,
+  external_deps,
   prep,
   cleanup,
   exit,

@@ -51,7 +51,7 @@ function health_check(file_path, app_name) {
   }
 }
 
-export function external_deps(pkg_json) {
+function external_deps(pkg_json) {
   try {
     // Exclude all production dependencies
     const dependencies = Object.keys(
@@ -134,4 +134,5 @@ module.exports = {
   cleanup: cleanup,
   exit: exit,
   run_tsfile: run_tsfile,
+  external_deps:external_deps
 };
