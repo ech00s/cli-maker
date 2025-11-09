@@ -45,7 +45,7 @@ function health_check(file_path, app_name) {
       .replaceAll("${IMPORT_PATH}", ROOT_DIR.replaceAll(sep, "/")),
   );
   try {
-    execSync(`npm run tsx ${hc_path}`);
+    execSync(`npx -y tsx ${hc_path}`);
   } catch (err) {
     exit("Health check failed", err);
   }
@@ -68,7 +68,7 @@ function external_deps(pkg_json) {
 function create_jsfile(app_name, pkg_json) {
   try {
     execSync(
-      `npm run -s esbuild -- --bundle --platform=node --format=cjs --outfile=${join(WORK_DIR, app_name + ".js")} --external:path --external:fs ${external_deps(pkg_json)} ${join(WORK_DIR, app_name + ".ts")}`,
+      `npx -y esbuild -- --bundle --platform=node --format=cjs --outfile=${join(WORK_DIR, app_name + ".js")} --external:path --external:fs ${external_deps(pkg_json)} ${join(WORK_DIR, app_name + ".ts")}`,
     );
   } catch (err) {
     exit("Could not create js file", err);
@@ -79,7 +79,7 @@ function create_binary(app_name, output) {
   const target = `node*-${process.platform}-${process.arch}`;
   try {
     execSync(
-      `npm run -s pkg -- -t ${target} ${join(WORK_DIR, app_name + ".js")} -o ${join(output, app_name)}`,
+      `npx -y pkg -- -t ${target} ${join(WORK_DIR, app_name + ".js")} -o ${join(output, app_name)}`,
     );
   } catch (err) {
     exit("Could not create binary", err);
@@ -88,7 +88,7 @@ function create_binary(app_name, output) {
 
 function run_tsfile(app_name, ...rest) {
   return execSync(
-    `npm run -s tsx ${join(WORK_DIR, app_name + ".ts")} -- ${rest.map((s) => `\"${s}\"`).join(" ")}`,
+    `npx -y tsx ${join(WORK_DIR, app_name + ".ts")} -- ${rest.map((s) => `\"${s}\"`).join(" ")}`,
   );
 }
 
