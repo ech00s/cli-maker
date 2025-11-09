@@ -21,10 +21,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@kubernetes/client-node": "^1.4.0",
     "esbuild": "^0.25.10",
     "pkg": "^5.8.1",
-    "tsx": "^4.20.5",
+    "tsx": "^4.20.5"
   },
   "devDependencies": {
     "@types/node": "^24.3.1",
