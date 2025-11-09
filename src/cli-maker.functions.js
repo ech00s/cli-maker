@@ -69,7 +69,7 @@ function create_jsfile(app_name, deps) {
   deps = deps.map((dep) => `--external:${dep}`).join(" ") || ""
   try {
     execSync(
-      `npx -y esbuild --bundle --platform=node --format=cjs --outfile=${join(WORK_DIR, app_name + ".js")} --external:path --external:fs ${deps} ${join(WORK_DIR, app_name + ".ts")}`,
+      `npx -y esbuild --bundle --platform=node --format=cjs --outfile=${join(WORK_DIR, app_name + ".js")} --external:path --external:fs ${join(WORK_DIR, app_name + ".ts")}`,
     );
   } catch (err) {
     exit("Could not create js file", err);
@@ -82,7 +82,7 @@ function create_binary(app_name, output,deps) {
   const target = `node*-${process.platform}-${process.arch}`;
   try {
     execSync(
-      `npx -y pkg -t ${target} ${join(WORK_DIR, app_name + ".js")} -o ${join(output, app_name)} ${deps}`,
+      `npx -y pkg -t ${target} ${join(WORK_DIR, app_name + ".js")} -o ${join(output, app_name)}`,
     );
   } catch (err) {
     exit("Could not create binary", err);
