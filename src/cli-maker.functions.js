@@ -51,7 +51,7 @@ function health_check(file_path, app_name) {
   }
 }
 
-function external_deps(pkg_json) {
+export function external_deps(pkg_json) {
   try {
     // Exclude all production dependencies
     const dependencies = Object.keys(
@@ -59,27 +59,30 @@ function external_deps(pkg_json) {
     );
     console.log("Dependencies".bg_cyan().txt_black() + ":");
     console.log("    " + JSON.stringify(dependencies, null, 1).txt_bold());
-    return dependencies.map((dep) => `--external:${dep}`).join(" ") || "";
+    return dependencies;
   } catch (e) {
     exit("Invalid package.json at " + pkg_json, e.message);
   }
 }
 
-function create_jsfile(app_name, pkg_json) {
+function create_jsfile(app_name, deps) {
+  deps = deps.map((dep) => `--external:${dep}`).join(" ") || ""
   try {
     execSync(
-      `npx -y esbuild --bundle --platform=node --format=cjs --outfile=${join(WORK_DIR, app_name + ".js")} --external:path --external:fs ${external_deps(pkg_json)} ${join(WORK_DIR, app_name + ".ts")}`,
+      `npx -y esbuild --bundle --platform=node --format=cjs --outfile=${join(WORK_DIR, app_name + ".js")} --external:path --external:fs ${deps} ${join(WORK_DIR, app_name + ".ts")}`,
     );
   } catch (err) {
     exit("Could not create js file", err);
   }
 }
 
-function create_binary(app_name, output) {
+function create_binary(app_name, output,deps) {
+  deps = deps.map(dep => `--assets node_modules/${dep}`)
+    .join(" ") || "";
   const target = `node*-${process.platform}-${process.arch}`;
   try {
     execSync(
-      `npx -y pkg -t ${target} ${join(WORK_DIR, app_name + ".js")} -o ${join(output, app_name)}`,
+      `npx -y pkg -t ${target} ${join(WORK_DIR, app_name + ".js")} -o ${join(output, app_name)} ${deps}`,
     );
   } catch (err) {
     exit("Could not create binary", err);

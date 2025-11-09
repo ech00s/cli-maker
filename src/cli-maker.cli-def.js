@@ -118,11 +118,12 @@ const cli_maker = new cli_builder("cli-maker", "Cli maker builder")
           health_check(f.file_path, f.app_name);
           logger.info(f.app_name + ": " + "Validated".bg_green().txt_black());
           create_tsfile(f.file_path, f.app_name);
-          create_jsfile(f.app_name, pkg_json);
+          const deps = external_deps(pkg_json)
+          create_jsfile(f.app_name, deps);
           logger.info(
             f.app_name + ": " + "Creating binary".bg_yellow().txt_black(),
           );
-          create_binary(f.app_name, output);
+          create_binary(f.app_name, output,deps);
           logger.info(
             f.app_name + ": " + "Binary created".bg_green().txt_black(),
           );
