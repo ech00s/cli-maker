@@ -20,12 +20,15 @@
   "author": "SystemsPurge",
   "license": "ISC",
   "description": "",
-  "devDependencies": {
-    "@types/node": "^24.3.1",
+  "dependencies": {
+    "@kubernetes/client-node": "^1.4.0",
     "esbuild": "^0.25.10",
     "pkg": "^5.8.1",
-    "prettier": "^3.6.2",
     "tsx": "^4.20.5",
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "prettier": "^3.6.2",
     "typescript": "^5.9.2"
   }
 }
