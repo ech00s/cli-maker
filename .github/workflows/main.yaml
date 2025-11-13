@@ -4,7 +4,6 @@ on:
 jobs:
   test:
     runs-on: 
-      - self-hosted
       - amd64
     container: node:23-alpine3.22
     steps:
