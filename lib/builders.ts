@@ -20,7 +20,6 @@ import {
   maybe_variadic,
 } from "./models/builder";
 import { logger } from "./plugins/logger";
-import { randomBytes } from "crypto";
 import { schema_registry, sch_tree, enum_tree } from "./utils/schema_registry";
 
 type pos_block<C extends cmd_builder<any, any, any, any, any, any>> =
@@ -541,7 +540,7 @@ export class cmd_builder<
   }
 
   private build(): cmd_def {
-    const id: string = this.name + randomBytes(4).toString("hex");
+    const id: string = this.name + Math.trunc(Math.random() * 9998 + 1).toString();
     schema_registry.register_tree(id, {
       schemas: this.schema_tree,
       enums: this.enum_tree,
