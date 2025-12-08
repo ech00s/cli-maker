@@ -66,7 +66,7 @@ function external_deps(pkg_json) {
 }
 
 function create_jsfile(app_name, deps) {
-  deps = deps.map((dep) => `--external:${dep}`).join(" ") || ""
+  deps = deps.map((dep) => `--external:${dep}`).join(" ") || "";
   try {
     execSync(
       `npx -y esbuild --bundle --platform=node --format=cjs --outfile=${join(WORK_DIR, app_name + ".js")} --external:path --external:fs ${join(WORK_DIR, app_name + ".ts")}`,
@@ -76,9 +76,8 @@ function create_jsfile(app_name, deps) {
   }
 }
 
-function create_binary(app_name, output,deps) {
-  deps = deps.map(dep => `--assets node_modules/${dep}`)
-    .join(" ") || "";
+function create_binary(app_name, output, deps) {
+  deps = deps.map((dep) => `--assets node_modules/${dep}`).join(" ") || "";
   const target = `node*-${process.platform}-${process.arch}`;
   try {
     execSync(
@@ -134,5 +133,5 @@ module.exports = {
   cleanup: cleanup,
   exit: exit,
   run_tsfile: run_tsfile,
-  external_deps:external_deps
+  external_deps: external_deps,
 };

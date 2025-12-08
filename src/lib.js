@@ -7,14 +7,18 @@ var __export = (target, all) => {
     __defProp(target, name, { get: all[name], enumerable: true });
 };
 var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
+  if ((from && typeof from === "object") || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
       if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+        __defProp(to, key, {
+          get: () => from[key],
+          enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable,
+        });
   }
   return to;
 };
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var __toCommonJS = (mod) =>
+  __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // index.ts
 var index_exports = {};
@@ -25,7 +29,7 @@ __export(index_exports, {
   plugin: () => plugin,
   register_plugin: () => register_plugin,
   run_cli: () => run_cli,
-  run_cmd: () => run_cmd
+  run_cmd: () => run_cmd,
 });
 module.exports = __toCommonJS(index_exports);
 
@@ -39,7 +43,7 @@ var configurable = class {
     this.config = defaults;
   }
   configure(config) {
-    Object.entries(config).forEach(([k, v]) => this.config[k] = v);
+    Object.entries(config).forEach(([k, v]) => (this.config[k] = v));
   }
   get_val(key) {
     return this.config[key];
@@ -89,7 +93,7 @@ var schema_registry = class _schema_registry {
         if (type.startsWith("obj"))
           return _schema_registry.get_schema(id, ref_name);
         return _schema_registry.get_enum(id, ref_name);
-      }
+      },
     };
   }
 };
@@ -99,10 +103,11 @@ var plugin = class extends configurable {
   id;
   constructor(def, config_schema, sch_tree3 = {}, enum_tree3 = {}) {
     super(def);
-    this.id = this.constructor.name + (0, import_crypto.randomBytes)(4).toString("hex");
+    this.id =
+      this.constructor.name + (0, import_crypto.randomBytes)(4).toString("hex");
     schema_registry.register_tree(this.id, {
       schemas: { ...sch_tree3, [this.id]: config_schema },
-      enums: enum_tree3
+      enums: enum_tree3,
     });
   }
 };
@@ -112,27 +117,27 @@ var stol = {
   error: 1 /* error */,
   warn: 2 /* warn */,
   info: 3 /* info */,
-  debug: 4 /* debug */
+  debug: 4 /* debug */,
 };
 var ltos = {
   1: "error",
   2: "warn",
   3: "info",
-  4: "debug"
+  4: "debug",
 };
 var logger = class extends plugin {
   constructor() {
     super(
       {
         where: "default-logger",
-        "log-level": "info"
+        "log-level": "info",
       },
       {
         where: "str",
-        "log-level": "$ref/enum/log-level"
+        "log-level": "$ref/enum/log-level",
       },
       {},
-      { "log-level": ["debug", "info", "warn", "error", "off"] }
+      { "log-level": ["debug", "info", "warn", "error", "off"] },
     );
   }
   throw = (text, code) => {
@@ -161,13 +166,15 @@ var logger = class extends plugin {
   };
 };
 function ts() {
-  return (/* @__PURE__ */ new Date()).toLocaleString("sv", { timeZone: "CET" }).split("+")[0];
+  return /* @__PURE__ */ new Date()
+    .toLocaleString("sv", { timeZone: "CET" })
+    .split("+")[0];
 }
 function get_anonymous(name) {
   let base = {};
   base.config = {
     "log-level": "info",
-    where: name
+    where: name,
   };
   base = Object.entries(ltos).reduce((obj, [l, n]) => {
     return {
@@ -177,13 +184,13 @@ function get_anonymous(name) {
         if (parseInt(l) > stol[base.config["log-level"]]) return;
         console[n](
           `|${ts()}|${(n.length === 4 ? " " : "") + n.toUpperCase()}|[${base.config.where}]: `,
-          ...args
+          ...args,
         );
-      }
+      },
     };
   }, base);
   base.throw = (text, code) => {
-    base.error(text), process.exit(code ? code : 1);
+    (base.error(text), process.exit(code ? code : 1));
   };
   return base;
 }
@@ -214,8 +221,7 @@ var cmd_builder = class _cmd_builder extends builder {
     this.counter = 0;
     this.named = {};
     this.pos = [];
-    this.exec = () => {
-    };
+    this.exec = () => {};
     this.schema_tree = {};
   }
   static make_builder(plugins2 = { logger }) {
@@ -228,16 +234,16 @@ var cmd_builder = class _cmd_builder extends builder {
     if (!options) options = {};
     const idx = this.counter++;
     if (!options.name) options.name = `pos n\xB0${idx}`;
-    if (type.startsWith("obj"))
-      this.schema_tree[options.name] = options.schema;
-    if (type.startsWith("enum"))
-      this.enum_tree[options.name] = options.choices;
+    if (type.startsWith("obj")) this.schema_tree[options.name] = options.schema;
+    if (type.startsWith("enum")) this.enum_tree[options.name] = options.choices;
     this.pos.push({
       name: options.name,
       idx,
       type,
-      description: options.description ? options.description : "No description provided.",
-      variadic: options.variadic ? options.variadic : false
+      description: options.description
+        ? options.description
+        : "No description provided.",
+      variadic: options.variadic ? options.variadic : false,
     });
     return this;
   }
@@ -250,11 +256,15 @@ var cmd_builder = class _cmd_builder extends builder {
     this.named[name] = {
       name,
       optional: options.optional,
-      shorthands: options.shorthand ? [options.shorthand, `--${name}`] : [`--${name}`],
+      shorthands: options.shorthand
+        ? [options.shorthand, `--${name}`]
+        : [`--${name}`],
       type,
-      description: options.description ? options.description : "No description provided.",
+      description: options.description
+        ? options.description
+        : "No description provided.",
       variadic: options.variadic,
-      ...options.default && { default: options.default }
+      ...(options.default && { default: options.default }),
     };
     return this;
   }
@@ -286,7 +296,7 @@ var cmd_builder = class _cmd_builder extends builder {
     let col0 = [
       this.gen_usage(),
       "Description:",
-      `${IDENT}${this.description}`
+      `${IDENT}${this.description}`,
     ];
     let col1 = ["\n", "", "\n"];
     if (this.pos.length > 0) {
@@ -309,7 +319,7 @@ var cmd_builder = class _cmd_builder extends builder {
       col1.push("");
       Object.values(this.named).forEach((named_arg) => {
         col0.push(
-          `${IDENT}${named_arg.shorthands.join(", ")} <${named_arg.type}>`
+          `${IDENT}${named_arg.shorthands.join(", ")} <${named_arg.type}>`,
         );
         let base = `${named_arg.description}`;
         if (this.enum_tree[named_arg.name]) {
@@ -325,21 +335,22 @@ var cmd_builder = class _cmd_builder extends builder {
     }
     let maxl = Math.max(...col0.map((s) => s.length));
     for (let i = 0; i < col0.length; i++) {
-      col0[i] = `${col0[i]}${" ".repeat(maxl - col0[i].length)}${IDENT}${col1[i]}`;
+      col0[i] =
+        `${col0[i]}${" ".repeat(maxl - col0[i].length)}${IDENT}${col1[i]}`;
     }
     return col0.join("\n");
   }
   add_func(func) {
     this.exec = func;
     return {
-      build: () => this.build()
+      build: () => this.build(),
     };
   }
   build() {
     const id = this.name + (0, import_crypto2.randomBytes)(4).toString("hex");
     schema_registry.register_tree(id, {
       schemas: this.schema_tree,
-      enums: this.enum_tree
+      enums: this.enum_tree,
     });
     return {
       execute: this.exec,
@@ -349,7 +360,7 @@ var cmd_builder = class _cmd_builder extends builder {
       name: this.name,
       description: this.description,
       help: this.gen_help(),
-      plugins: this.plugins
+      plugins: this.plugins,
     };
   }
 };
@@ -377,7 +388,7 @@ var cli_builder = class extends builder {
       this.gen_usage(),
       "Description:",
       `${IDENT}${this.description}`,
-      "Commands:"
+      "Commands:",
     ];
     let col1 = ["\n", "", "\n", ""];
     Object.values(this.cli_tree).forEach((def) => {
@@ -386,7 +397,8 @@ var cli_builder = class extends builder {
     });
     let maxl = Math.max(...col0.map((s) => s.length));
     for (let i = 0; i < col0.length; i++) {
-      col0[i] = `${col0[i]}${" ".repeat(maxl - col0[i].length)}${IDENT}${IDENT}${col1[i]}`;
+      col0[i] =
+        `${col0[i]}${" ".repeat(maxl - col0[i].length)}${IDENT}${IDENT}${col1[i]}`;
     }
     return col0.join("\n");
   }
@@ -399,7 +411,7 @@ var cli_builder = class extends builder {
       description: this.description,
       cli_tree: this.cli_tree,
       version: this.version,
-      help: this.gen_help()
+      help: this.gen_help(),
     };
   }
 };
@@ -412,7 +424,7 @@ var builtin_meta_args = [
     name: "verbose",
     key: "log-level",
     type: "bool",
-    transform: (verbose) => verbose ? "debug" : "info"
+    transform: (verbose) => (verbose ? "debug" : "info"),
   },
   {
     plugin: "logger",
@@ -420,7 +432,7 @@ var builtin_meta_args = [
     name: "silent",
     key: "log-level",
     type: "bool",
-    transform: (silent) => silent ? "off" : "info"
+    transform: (silent) => (silent ? "off" : "info"),
   },
   {
     plugin: "logger",
@@ -428,20 +440,20 @@ var builtin_meta_args = [
     name: "debug",
     key: "log-level",
     type: "bool",
-    transform: (debug) => debug ? "debug" : "info"
+    transform: (debug) => (debug ? "debug" : "info"),
   },
   {
     plugin: "logger",
     shorthands: ["--log-level", "-ll"],
     name: "log-level",
     key: "log-level",
-    type: "enum"
-  }
+    type: "enum",
+  },
 ];
 var builtin_meta_cmds = [
   { names: ["--help"] },
   { names: ["--version"] },
-  { names: ["--config"] }
+  { names: ["--config"] },
 ];
 var mem = class _mem {
   static components = {};
@@ -470,7 +482,7 @@ var mem = class _mem {
       get: _mem.get,
       push: _mem.push,
       pop: _mem.pop,
-      clear: () => _mem.components = {}
+      clear: () => (_mem.components = {}),
     };
   }
 };
@@ -486,13 +498,17 @@ var cache = class extends plugin {
     super({ filename: "cache.json" }, { filename: "path" });
   }
   write(record) {
-    (0, import_fs.writeFileSync)(this.get_val("filename"), JSON.stringify(record));
+    (0, import_fs.writeFileSync)(
+      this.get_val("filename"),
+      JSON.stringify(record),
+    );
   }
   read() {
     try {
-      return JSON.parse((0, import_fs.readFileSync)(this.get_val("filename"), "utf-8"));
-    } catch (_) {
-    }
+      return JSON.parse(
+        (0, import_fs.readFileSync)(this.get_val("filename"), "utf-8"),
+      );
+    } catch (_) {}
     return {};
   }
   set(key, value) {
@@ -506,7 +522,7 @@ var cache = class extends plugin {
 // lib/plugins/plugins.ts
 var plugins = {
   logger: new logger(),
-  cache: new cache()
+  cache: new cache(),
 };
 function register_plugin(plugin_cls) {
   plugins[plugin_cls.name] = new plugin_cls();
@@ -575,7 +591,7 @@ var assigner_sys = class extends system {
     super({
       gets: ["parsed_args,cmd_def,plugins"],
       sets: ["args"],
-      ops: ["default"]
+      ops: ["default"],
     });
   }
   default(parsed_args, cmd_def, plugins2) {
@@ -601,7 +617,7 @@ var assigner_sys = class extends system {
     return {
       named,
       pos: pos.map((a) => a.value),
-      plugins: plugins2
+      plugins: plugins2,
     };
   }
   is_pos(base_arg) {
@@ -616,10 +632,10 @@ var config_sys = class extends system {
       gets: [
         "plugins,cmd_def",
         "parsed_args,meta_args,config_values,plugins",
-        "config_values,cmd_def"
+        "config_values,cmd_def",
       ],
       sets: ["plugins", "plugins", "cmd_def"],
-      ops: ["reduce_plugins", "configure_plugins", "default"]
+      ops: ["reduce_plugins", "configure_plugins", "default"],
     });
   }
   default(config_values, cmd_def) {
@@ -640,18 +656,20 @@ var config_sys = class extends system {
       if (!k.startsWith("p.")) return;
       const [_, plugin_name] = k.split(".");
       if (plugin_name in plugins2) {
-        Object.entries(v).forEach(
-          ([pk, pv]) => plugins2[plugin_name].set_val(pk, pv)
+        Object.entries(v).forEach(([pk, pv]) =>
+          plugins2[plugin_name].set_val(pk, pv),
         );
       }
     });
     meta_args.forEach((meta_arg) => {
       const parsed_arg = parsed_args.find(
-        (parsed_arg2) => parsed_arg2.name === meta_arg.name && parsed_arg2.meta
+        (parsed_arg2) => parsed_arg2.name === meta_arg.name && parsed_arg2.meta,
       );
       if (parsed_arg) {
         plugins2[meta_arg.plugin].configure({
-          [meta_arg.key]: meta_arg.transform ? meta_arg.transform(parsed_arg.value) : parsed_arg.value
+          [meta_arg.key]: meta_arg.transform
+            ? meta_arg.transform(parsed_arg.value)
+            : parsed_arg.value,
         });
       }
     });
@@ -665,7 +683,7 @@ var converter_sys = class extends system {
     super({
       gets: ["cmd_def,str_args,meta_args"],
       sets: ["parsed_args"],
-      ops: ["default"]
+      ops: ["default"],
     });
   }
   default(cmd_def, str_args, meta_args) {
@@ -674,9 +692,7 @@ var converter_sys = class extends system {
         const cmd_arg = this.find(cmd_def, str_arg.name);
         return this.convert(cmd_arg.type, cmd_arg.name, str_arg);
       }
-      const meta_arg = meta_args.find(
-        (ma) => ma.name === str_arg.name
-      );
+      const meta_arg = meta_args.find((ma) => ma.name === str_arg.name);
       return this.convert(meta_arg.type, meta_arg.name, str_arg);
     });
   }
@@ -684,7 +700,7 @@ var converter_sys = class extends system {
     return {
       value: this.converters[`to_${type}`](str_arg.strval),
       name,
-      meta: str_arg.meta
+      meta: str_arg.meta,
     };
   }
   osplit(objarr) {
@@ -698,7 +714,7 @@ var converter_sys = class extends system {
   to_float = (strval) => parseFloat(strval);
   to_int = (strval) => parseInt(strval);
   to_obj = (strval) => JSON.parse(strval);
-  to_str_lst = (strval) => strval.length === 0 ? [] : strval.split(",");
+  to_str_lst = (strval) => (strval.length === 0 ? [] : strval.split(","));
   to_date = (strval) => new Date(strval);
   converters = {
     to_bool: this.to_bool,
@@ -729,7 +745,7 @@ var converter_sys = class extends system {
     to_float_lst: (strval) => strval.split(",").map((f) => this.to_float(f)),
     to_int_lst: (strval) => strval.split(",").map((n) => this.to_int(n)),
     to_path_lst: this.to_str_lst,
-    to_date_lst: (strval) => strval.split(",").map((n) => this.to_date(n))
+    to_date_lst: (strval) => strval.split(",").map((n) => this.to_date(n)),
   };
 };
 
@@ -739,7 +755,7 @@ var executor_sys = class extends system {
     super({
       gets: ["args,cmd_def"],
       sets: [""],
-      ops: ["default"]
+      ops: ["default"],
     });
   }
   default(args, cmd_def) {
@@ -788,14 +804,14 @@ var finder_sys = class extends system {
     super({
       gets: ["raw_argv,cli_def,meta_cmds"],
       sets: ["context"],
-      ops: ["default"]
+      ops: ["default"],
     });
   }
   default(raw_argv, cli_def, meta_cmds) {
     let c = new cursor(raw_argv.content);
     let depth = cli_def;
-    let meta_cmd = meta_cmds.find(
-      (meta_cmd2) => meta_cmd2.names.some((name) => name === c.peek())
+    let meta_cmd = meta_cmds.find((meta_cmd2) =>
+      meta_cmd2.names.some((name) => name === c.peek()),
     );
     if (meta_cmd) {
       return { value: "meta", depth: depth.name };
@@ -803,7 +819,7 @@ var finder_sys = class extends system {
     while (!this.is_cmd_def(depth)) {
       if (c.done()) {
         this.logger.throw(
-          `No command found for subcommand chain: ${raw_argv.content}`
+          `No command found for subcommand chain: ${raw_argv.content}`,
         );
       }
       const term = c.next();
@@ -811,8 +827,8 @@ var finder_sys = class extends system {
         this.logger.throw(`Unrecognized subcommand: ${term}`);
       }
       depth = depth.cli_tree[term];
-      let meta_cmd2 = meta_cmds.find(
-        (meta_cmd3) => meta_cmd3.names.some((name) => name === c.peek())
+      let meta_cmd2 = meta_cmds.find((meta_cmd3) =>
+        meta_cmd3.names.some((name) => name === c.peek()),
       );
       if (meta_cmd2) {
         return { value: "meta", depth: depth.name };
@@ -834,13 +850,16 @@ var ndb = class {
   constructor(dir_name) {
     this.logger = get_anonymous("NDB");
     this.root = (0, import_path.join)(this.home(), ".cli-maker", dir_name);
-    if (!this.has_data(this.root)) (0, import_fs2.mkdirSync)(this.root, { recursive: true });
+    if (!this.has_data(this.root))
+      (0, import_fs2.mkdirSync)(this.root, { recursive: true });
   }
   create_path(parts) {
     return (0, import_path.join)(this.root, ...parts);
   }
   to_absolute(path) {
-    return path.startsWith("/") || path.slice(1).startsWith(":\\") ? path : (0, import_path.join)(process.cwd(), path);
+    return path.startsWith("/") || path.slice(1).startsWith(":\\")
+      ? path
+      : (0, import_path.join)(process.cwd(), path);
   }
   read_data(path) {
     let result = {};
@@ -858,10 +877,16 @@ var ndb = class {
     } else {
       old = this.read_data(path);
     }
-    (0, import_fs2.writeFileSync)(path, JSON.stringify({ ...old, ...new_data }));
+    (0, import_fs2.writeFileSync)(
+      path,
+      JSON.stringify({ ...old, ...new_data }),
+    );
   }
   create_data(path) {
-    (0, import_fs2.mkdirSync)((0, import_path.join)(...path.split(import_path.sep).slice(0, -1)), { recursive: true });
+    (0, import_fs2.mkdirSync)(
+      (0, import_path.join)(...path.split(import_path.sep).slice(0, -1)),
+      { recursive: true },
+    );
     (0, import_fs2.openSync)(path, "w");
   }
   has_data(path) {
@@ -877,23 +902,65 @@ var ndb = class {
 
 // lib/models/build-util.ts
 function is_meta(v) {
-  return typeof v === "object" && "name" in v && typeof v.name === "string" && "description" in v && typeof v.description === "string";
+  return (
+    typeof v === "object" &&
+    "name" in v &&
+    typeof v.name === "string" &&
+    "description" in v &&
+    typeof v.description === "string"
+  );
 }
 function is_base_arg(v) {
-  return is_meta(v) && "type" in v && typeof v.type === "string" && "variadic" in v && typeof v.variadic === "boolean";
+  return (
+    is_meta(v) &&
+    "type" in v &&
+    typeof v.type === "string" &&
+    "variadic" in v &&
+    typeof v.variadic === "boolean"
+  );
 }
 function is_named_arg(v) {
-  return is_base_arg(v) && "optional" in v && typeof v.optional === "boolean" && "shorthands" in v && Array.isArray(v.shorthands) && v.shorthands.every((sh) => typeof sh === "string");
+  return (
+    is_base_arg(v) &&
+    "optional" in v &&
+    typeof v.optional === "boolean" &&
+    "shorthands" in v &&
+    Array.isArray(v.shorthands) &&
+    v.shorthands.every((sh) => typeof sh === "string")
+  );
 }
 function is_pos_arg(v) {
   return is_base_arg(v) && "idx" in v && typeof v.idx === "number";
 }
 function is_cmd_def(v) {
-  return is_meta(v) && "execute" in v && typeof v.execute === "function" && "named" in v && typeof v.named === "object" && Object.values(v.named).every((n) => is_named_arg(n)) && "pos" in v && Array.isArray(v.pos) && v.pos.every((p) => is_pos_arg(p)) && "help" in v && typeof v.help === "string" && "id" in v && typeof v.id === "string" && "plugins" in v && typeof v.plugins === "object";
+  return (
+    is_meta(v) &&
+    "execute" in v &&
+    typeof v.execute === "function" &&
+    "named" in v &&
+    typeof v.named === "object" &&
+    Object.values(v.named).every((n) => is_named_arg(n)) &&
+    "pos" in v &&
+    Array.isArray(v.pos) &&
+    v.pos.every((p) => is_pos_arg(p)) &&
+    "help" in v &&
+    typeof v.help === "string" &&
+    "id" in v &&
+    typeof v.id === "string" &&
+    "plugins" in v &&
+    typeof v.plugins === "object"
+  );
 }
 function is_cli_def(v) {
-  return is_meta(v) && "version" in v && typeof v.version === "string" && "help" in v && typeof v.help === "string" && "cli_tree" in v && typeof v.cli_tree === "object" && Object.values(v.cli_tree).every(
-    (_v) => is_cli_def(_v) || is_cmd_def(_v)
+  return (
+    is_meta(v) &&
+    "version" in v &&
+    typeof v.version === "string" &&
+    "help" in v &&
+    typeof v.help === "string" &&
+    "cli_tree" in v &&
+    typeof v.cli_tree === "object" &&
+    Object.values(v.cli_tree).every((_v) => is_cli_def(_v) || is_cmd_def(_v))
   );
 }
 var build_util_default = is_cli_def;
@@ -962,8 +1029,8 @@ var conf = class _conf {
           subconfv,
           cli_def.cli_tree[subconfk],
           plugin_config,
-          path
-        )
+          path,
+        ),
       );
     });
     return result;
@@ -988,17 +1055,17 @@ var conf = class _conf {
           if (!named_arg.default) return obj;
           return {
             schema: { ...obj.schema, [named_arg.name]: named_arg.type },
-            defaults: { ...obj.defaults, [named_arg.name]: named_arg.default }
+            defaults: { ...obj.defaults, [named_arg.name]: named_arg.default },
           };
         },
-        { defaults: {}, schema: {} }
+        { defaults: {}, schema: {} },
       ),
-      plugins: def.plugins
+      plugins: def.plugins,
     };
   }
   static find(path, def) {
     if (!build_util_default(def)) return def;
-    path.slice(1).forEach((p) => def = def.cli_tree[p]);
+    path.slice(1).forEach((p) => (def = def.cli_tree[p]));
     return def;
   }
   static parse_def(def) {
@@ -1015,7 +1082,7 @@ var conf = class _conf {
       parse_def(def) {
         return _conf.parse_def(def);
       },
-      find: _conf.find
+      find: _conf.find,
     };
   }
 };
@@ -1028,10 +1095,10 @@ var meta_cmd_sys = class extends system {
         "raw_argv,context,cli_def,plugins",
         "raw_argv,context",
         "context,raw_argv,cli_def",
-        ""
+        "",
       ],
       sets: ["cmd_def,str_args", "raw_argv", "config_values", "meta_cmds"],
-      ops: ["default", "clip_rawargv", "check_defaults", "set_meta_cmds"]
+      ops: ["default", "clip_rawargv", "check_defaults", "set_meta_cmds"],
     });
   }
   //checks if running command has defaults
@@ -1041,7 +1108,7 @@ var meta_cmd_sys = class extends system {
     const chain = raw_argv.content.slice(0, depth_idx + 1);
     const rest = new cursor(raw_argv.content.slice(depth_idx + 1));
     let depth = cli_def;
-    chain.forEach((d) => depth = depth.cli_tree[d]);
+    chain.forEach((d) => (depth = depth.cli_tree[d]));
     if (context.value === "meta") {
       switch (rest.next()) {
         case "--config":
@@ -1052,7 +1119,7 @@ var meta_cmd_sys = class extends system {
             rest.next(),
             chain,
             cli_def.name,
-            n
+            n,
           );
         case "--help":
           return [this.to_help(depth), []];
@@ -1072,7 +1139,7 @@ var meta_cmd_sys = class extends system {
     }
     let chain = raw_argv.content.slice(
       0,
-      raw_argv.content.indexOf(context.depth) + 1
+      raw_argv.content.indexOf(context.depth) + 1,
     );
     const db = new ndb(cli_def.name);
     let p = db.create_path(chain);
@@ -1085,7 +1152,7 @@ var meta_cmd_sys = class extends system {
     return [
       { names: ["--config"] },
       { names: ["--help"] },
-      { names: ["--version"] }
+      { names: ["--version"] },
     ];
   }
   get_config_cmd(def, plugins2, file_path, chain, cli_name, subcommand) {
@@ -1103,26 +1170,32 @@ var meta_cmd_sys = class extends system {
   }
   build_show_cmd(def) {
     return [
-      cmd_builder.make_builder()("show").add_func(({ logger: logger2 }, ...__) => {
-        const p = conf.get_parser();
-        const unmerged = p.parse_def(def);
-        logger2.info(JSON.stringify(unmerged, null, 1));
-      }).build(),
-      []
+      cmd_builder
+        .make_builder()("show")
+        .add_func(({ logger: logger2 }, ...__) => {
+          const p = conf.get_parser();
+          const unmerged = p.parse_def(def);
+          logger2.info(JSON.stringify(unmerged, null, 1));
+        })
+        .build(),
+      [],
     ];
   }
   build_unbind_cmd(chain, cli_name) {
     return [
-      cmd_builder.make_builder()("unbind").add_func(({ logger: logger2 }, _, ...__) => {
-        const db = new ndb(cli_name);
-        const p = db.create_path(chain);
-        if (db.has_data(p)) {
-          db.delete_data(p);
-        } else {
-          logger2.info(`No such config file: ${p}`);
-        }
-      }).build(),
-      []
+      cmd_builder
+        .make_builder()("unbind")
+        .add_func(({ logger: logger2 }, _, ...__) => {
+          const db = new ndb(cli_name);
+          const p = db.create_path(chain);
+          if (db.has_data(p)) {
+            db.delete_data(p);
+          } else {
+            logger2.info(`No such config file: ${p}`);
+          }
+        })
+        .build(),
+      [],
     ];
   }
   build_set_cmd(def, file_path, plugins2, cli_name) {
@@ -1160,13 +1233,14 @@ var meta_cmd_sys = class extends system {
             let t = config_schema[pk];
             b = b.add_named(name, s.is_ref(t) ? t.split("/")[1] : t, {
               optional: true,
-              ...schema && { schema },
-              ..._enum && { choices: _enum }
+              ...(schema && { schema }),
+              ...(_enum && { choices: _enum }),
             });
             str_args.push({
-              strval: typeof pv === "object" ? JSON.stringify(pv) : pv.toString(),
+              strval:
+                typeof pv === "object" ? JSON.stringify(pv) : pv.toString(),
               name,
-              meta: false
+              meta: false,
             });
           });
         } else {
@@ -1176,30 +1250,32 @@ var meta_cmd_sys = class extends system {
           const _enum = s.get_enum(k);
           b = b.add_named(name, d.named[k].type, {
             optional: true,
-            ...schema && { schema },
-            ..._enum && { choices: _enum }
+            ...(schema && { schema }),
+            ...(_enum && { choices: _enum }),
           });
           str_args.push({
             strval: typeof v === "object" ? JSON.stringify(v) : v.toString(),
             name,
-            meta: false
+            meta: false,
           });
         }
       });
     });
     return [
-      b.add_func(({ logger: logger2 }, args, ...__) => {
-        const db2 = new ndb(cli_name);
-        res.forEach((pc) => {
-          if (pc.path[0] === cli_name) {
-            pc.path = pc.path.slice(1);
-          }
-          db2.write_data(db2.create_path(pc.path), pc.defaults);
-        });
-        logger2.info("Wrote config: ");
-        logger2.info(JSON.stringify(res, null, 1));
-      }).build(),
-      str_args
+      b
+        .add_func(({ logger: logger2 }, args, ...__) => {
+          const db2 = new ndb(cli_name);
+          res.forEach((pc) => {
+            if (pc.path[0] === cli_name) {
+              pc.path = pc.path.slice(1);
+            }
+            db2.write_data(db2.create_path(pc.path), pc.defaults);
+          });
+          logger2.info("Wrote config: ");
+          logger2.info(JSON.stringify(res, null, 1));
+        })
+        .build(),
+      str_args,
     ];
   }
   to_version(def) {
@@ -1213,9 +1289,11 @@ var meta_cmd_sys = class extends system {
       help: `--version		Prints ${def.name} version`,
       execute: (plugins2, {}, ...[]) => {
         plugins2.logger.info(
-          def.version ? def.version : "Version is transitive, call at top level"
+          def.version
+            ? def.version
+            : "Version is transitive, call at top level",
         );
-      }
+      },
     };
   }
   to_help(def) {
@@ -1229,7 +1307,7 @@ var meta_cmd_sys = class extends system {
       help: `--help		Prints ${def.name} help text`,
       execute: (plugins2, {}, ...[]) => {
         plugins2.logger.info(def.help);
-      }
+      },
     };
   }
 };
@@ -1240,7 +1318,7 @@ var parser_sys = class extends system {
     super({
       gets: ["raw_argv,cmd_def,meta_args", "raw_argv"],
       sets: ["str_args", "raw_argv"],
-      ops: ["default", "normalize"]
+      ops: ["default", "normalize"],
     });
   }
   default({ content: argv }, cmd_def, meta_args) {
@@ -1268,7 +1346,7 @@ var parser_sys = class extends system {
       posc_next = posc.next();
       if (posc_next && !posc_next.variadic) {
         this.logger.throw(
-          `Missing required positional argument: ${posc_next.name}`
+          `Missing required positional argument: ${posc_next.name}`,
         );
       }
     }
@@ -1281,22 +1359,26 @@ var parser_sys = class extends system {
           result.push({ name: namedarg.name, strval: "false", meta: false });
         } else if (!namedarg.default) {
           this.logger.throw(
-            `Missing required named argument: ${namedarg.name}`
+            `Missing required named argument: ${namedarg.name}`,
           );
         } else {
           if (namedarg.variadic) {
             namedarg.default.forEach((v) => {
               result.push({
                 name: namedarg.name,
-                strval: typeof v === "object" ? JSON.stringify(v) : v.toString(),
-                meta: false
+                strval:
+                  typeof v === "object" ? JSON.stringify(v) : v.toString(),
+                meta: false,
               });
             });
           } else {
             result.push({
               name: namedarg.name,
-              strval: typeof namedarg.default === "object" ? JSON.stringify(namedarg.default) : namedarg.default.toString(),
-              meta: false
+              strval:
+                typeof namedarg.default === "object"
+                  ? JSON.stringify(namedarg.default)
+                  : namedarg.default.toString(),
+              meta: false,
             });
           }
         }
@@ -1306,13 +1388,13 @@ var parser_sys = class extends system {
   }
   create_handle_named(visited, result, argvc) {
     return (argvc_next, args, meta) => {
-      const arg = args.find(
-        (arg2) => arg2.shorthands.some((sh) => sh === argvc_next)
+      const arg = args.find((arg2) =>
+        arg2.shorthands.some((sh) => sh === argvc_next),
       );
       if (arg) {
         if (visited.has(arg.name) && !arg.variadic) {
           this.logger.throw(
-            `Duplicate non variadic named argument: ${arg.name}`
+            `Duplicate non variadic named argument: ${arg.name}`,
           );
         }
         visited.add(arg.name);
@@ -1322,7 +1404,7 @@ var parser_sys = class extends system {
           result.push({
             name: arg.name,
             strval: argvc.next(),
-            meta
+            meta,
           });
         }
         return true;
@@ -1359,21 +1441,19 @@ var validator_sys = class extends system {
     super({
       gets: ["cmd_def,str_args,meta_args,plugins"],
       sets: [""],
-      ops: ["default"]
+      ops: ["default"],
     });
   }
   default(cmd_def, str_args, meta_args, plugins2) {
     const man = schema_registry.get_manager(cmd_def.id);
     str_args.forEach((str_arg) => {
       if (str_arg.meta) {
-        const meta_arg = meta_args.find(
-          (ma) => ma.name === str_arg.name
-        );
+        const meta_arg = meta_args.find((ma) => ma.name === str_arg.name);
         this.validate(
           str_arg,
           meta_arg.type,
           meta_arg.name,
-          schema_registry.get_manager(plugins2[meta_arg.plugin].id)
+          schema_registry.get_manager(plugins2[meta_arg.plugin].id),
         );
       } else {
         const base_arg = this.find(cmd_def, str_arg.name);
@@ -1449,7 +1529,7 @@ var validator_sys = class extends system {
           typeof v === "string" ? v : JSON.stringify(v),
           ref_type,
           ref_name,
-          man
+          man,
         );
       } else {
         this.valid_simple(v.toString(), sval);
@@ -1462,7 +1542,10 @@ var validator_sys = class extends system {
   is_int = (strval) => this.is_number(strval) && !strval.includes(".");
   is_str = (_) => true;
   is_path = (strval) => {
-    const { s, b } = import_path2.sep === "/" ? { s: "\\/", b: "\\.{2}" } : { s: "\\\\", b: "[a-zA-Z]:" };
+    const { s, b } =
+      import_path2.sep === "/"
+        ? { s: "\\/", b: "\\.{2}" }
+        : { s: "\\\\", b: "[a-zA-Z]:" };
     const r = new RegExp(`^((${b})?${s})?([\\w\\-. ]+${s})*[\\w\\-. ]+$`);
     return r.test(strval);
   };
@@ -1492,13 +1575,25 @@ var validator_sys = class extends system {
     is_enum: this.is_str,
     is_date: this.is_date,
     is_any: (_) => true,
-    is_bool_lst: (strval) => this.is_str_lst(strval) && this.csplit(strval).every((e) => this.is_bool(e)),
-    is_float_lst: (strval) => this.is_str_lst(strval) && this.csplit(strval).every((e) => this.is_number(e)),
-    is_int_lst: (strval) => this.is_str_lst(strval) && this.csplit(strval).every((e) => this.is_int(e)),
-    is_path_lst: (strval) => this.is_str_lst(strval) && this.csplit(strval).every((e) => this.is_path(e)),
-    is_obj_lst: (strval) => this.is_str_lst(strval) && this.osplit(strval).every((e) => this.is_obj(e)),
+    is_bool_lst: (strval) =>
+      this.is_str_lst(strval) &&
+      this.csplit(strval).every((e) => this.is_bool(e)),
+    is_float_lst: (strval) =>
+      this.is_str_lst(strval) &&
+      this.csplit(strval).every((e) => this.is_number(e)),
+    is_int_lst: (strval) =>
+      this.is_str_lst(strval) &&
+      this.csplit(strval).every((e) => this.is_int(e)),
+    is_path_lst: (strval) =>
+      this.is_str_lst(strval) &&
+      this.csplit(strval).every((e) => this.is_path(e)),
+    is_obj_lst: (strval) =>
+      this.is_str_lst(strval) &&
+      this.osplit(strval).every((e) => this.is_obj(e)),
     is_enum_lst: this.is_str_lst,
-    is_date_lst: (strval) => this.is_str_lst(strval) && this.csplit(strval).every((e) => this.is_date(e))
+    is_date_lst: (strval) =>
+      this.is_str_lst(strval) &&
+      this.csplit(strval).every((e) => this.is_date(e)),
   };
 };
 
@@ -1511,7 +1606,7 @@ var systems = {
   parser: parser_sys,
   executor: executor_sys,
   assigner: assigner_sys,
-  meta: meta_cmd_sys
+  meta: meta_cmd_sys,
 };
 
 // lib/coordinator.ts
@@ -1542,7 +1637,7 @@ var main_operation = [
   //assign all the necessities to the object passed to the function
   { do: "run", system: "assigner", op: "default" },
   //execute the function representing the command
-  { do: "run", system: "executor", op: "default" }
+  { do: "run", system: "executor", op: "default" },
 ];
 var coordinator = class _coordinator {
   static hard_blocker = false;
@@ -1560,9 +1655,7 @@ var coordinator = class _coordinator {
   }
   run(proc) {
     const mem_man = mem.create_mem_manager();
-    Object.entries(proc.init_components).forEach(
-      ([k, c]) => mem_man.add(k, c)
-    );
+    Object.entries(proc.init_components).forEach(([k, c]) => mem_man.add(k, c));
     proc.operation.forEach((step) => {
       switch (step.do) {
         case "config":
@@ -1588,17 +1681,18 @@ function run_cli(input, cli_def) {
   const init_components = {
     raw_argv: { content: input },
     cli_def,
-    plugins
+    plugins,
   };
   ctx.main(init_components);
 }
 // Annotate the CommonJS export names for ESM import in node:
-0 && (module.exports = {
-  add_meta_arg,
-  cli_builder,
-  cmd_builder,
-  plugin,
-  register_plugin,
-  run_cli,
-  run_cmd
-});
+0 &&
+  (module.exports = {
+    add_meta_arg,
+    cli_builder,
+    cmd_builder,
+    plugin,
+    register_plugin,
+    run_cli,
+    run_cmd,
+  });
