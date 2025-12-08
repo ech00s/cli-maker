@@ -13,3 +13,5 @@ export let plugins: _plugins = {
 export function register_plugin<T extends plugin>(plugin_cls: { new (): T }) {
   plugins[plugin_cls.name] = new plugin_cls();
 }
+
+export {logger,cache,client};
